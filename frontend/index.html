@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Manicurista</title>
+    <style>
+    /* 1. VARIABLES Y BASE */
+    :root {
+      --crema-base: #F2E8DF;
+      --negro-profundo: #1A1A1A;
+      --nude-rosado: #DBC7B5;
+      --gris-seda: #8C8C8C;
+      --blanco-lino: #FFFFFF;
+      /* Estados de citas */
+      --scheduled: #E3F2FD;
+      --confirmed: #E8F5E9;
+      --cancelled: #FCE4EC;
+      --completed: #F3E5F5;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--crema-base);
+      color: var(--negro-profundo);
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: var(--blanco-lino);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* CENTRAR TÍTULOS */
+    h1, h2, h3 {
+      text-align: center;
+      color: var(--negro-profundo);
+    }
+
+    /* 2. FORMULARIOS Y BOTONES */
+    .form-group { margin-bottom: 15px; }
+    label { display: block; color: var(--gris-seda); margin-bottom: 5px; font-weight: bold; }
+    
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--nude-rosado);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: var(--nude-rosado);
+      color: var(--negro-profundo);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button:hover { opacity: 0.8; }
+    button:disabled {
+      background-color: var(--gris-seda);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* 3. LISTADO DE HORARIOS (SLOTS) */
+    #slots {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+      justify-content: center; /* Centra también los cuadritos de horarios */
+    }
+
+    .slot-item {
+      padding: 8px 15px;
+      border: 1px solid var(--nude-rosado);
+      border-radius: 4px;
+      cursor: pointer;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .slot-item:hover { background-color: var(--crema-base); }
+
+    .slot-item.selected {
+      background-color: var(--nude-rosado) !important;
+      font-weight: bold;
+      border-color: var(--negro-profundo);
+    }
+
+    /* 4. CITAS Y ESTADOS */
+    .appointment-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 5px solid var(--gris-seda);
+    }
+
+    .status-scheduled { background-color: var(--scheduled); border-color: #2196F3; }
+    .status-confirmed { background-color: var(--confirmed); border-color: #4CAF50; }
+    .status-cancelled { background-color: var(--cancelled); border-color: #E91E63; }
+    .status-completed { background-color: var(--completed); border-color: #9C27B0; }
+
+    .actions { display: flex; gap: 5px; }
+    .btn-small { padding: 5px 10px; font-size: 12px; width: auto; margin: 0; }
+    .btn-cancel { background-color: #ffcdd2; }
+    .btn-confirm { background-color: #c8e6c9; }
+    .btn-complete { background-color: #d1c4e9; }
+
+    /* 5. LOADER ANIMATION */
+    .loader {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0,0,0,0.1);
+      border-bottom-color: var(--negro-profundo);
+      border-radius: 50%;
+      display: none;
+      animation: rotation 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes rotation {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* --- NUEVOS ESTILOS PARA ROLES --- */
+
+    /* Contenedores de vista principales */
+    .admin-only, .client-only { 
+      display: none; 
+      width: 100%;
+    }
+
+    /* Esta clase se activará mediante JavaScript */
+    .visible { 
+      display: block !important; 
+    }
+
+    /* Estilo para el login inicial */
+    #login-section {
+      text-align: center;
+      padding: 20px;
+      background: var(--blanco-lino);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    #login-section input {
+      max-width: 300px;
+      margin-bottom: 10px;
+    }
+
+    /* Tablas de historial para el usuario */
+    .history-card {
+      background: #f9f9f9;
+      border: 1px solid var(--nude-rosado);
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+  </style>
+  </head>
+<body>
+  <div class="container">
+    <div id="login-section">
+  <h1>💅 Bienvenida a Agenda Manicurista</h1>
+  
+  <div id="auth-login">
+    <div class="form-group">
+      <input type="email" id="loginEmail" placeholder="Tu correo electrónico">
+      <button onclick="checkRole()">Ingresar</button>
+    </div>
+    <p>¿No tienes cuenta? <a href="#" onclick="toggleAuth(true)">Regístrate aquí</a></p>
+  </div>
+
+  <div id="auth-register" style="display:none;">
+    <div class="form-group">
+      <input type="text" id="regName" placeholder="Tu nombre completo">
+      <input type="email" id="regEmail" placeholder="Tu correo electrónico">
+      <button onclick="registerUser()">Crear cuenta</button>
+    </div>
+    <p>¿Ya tienes cuenta? <a href="#" onclick="toggleAuth(false)">Inicia sesión</a></p>
+    </div>
+  </div>
+
+    <div id="client-view" class="client-only">
+      <h1>Mi Panel de Reserva</h1>
+      <div class="form-group">
+        <label for="dateInput">Selecciona una fecha</label>
+        <input type="date" id="dateInput">
+      </div>
+      
+      <h2>Reservar nueva cita</h2>
+      <div class="form-group">
+        <label for="services">Servicio</label>
+        <select id="services"></select>
+      </div>
+      <div class="form-group">
+        <label for="units">Unidades (opcional)</label>
+        <input type="number" id="units" min="0" value="0">
+      </div>
+
+      <button id="btnCheck" onclick="checkAvailability()">
+        <span>Ver disponibilidad</span>
+        <div id="loaderCheck" class="loader"></div>
+      </button>
+
+      <h3>Horarios disponibles</h3>
+      <ul id="slots"></ul>
+      
+      <button id="btnReserve" onclick="createAppointment()">
+        <span>Reservar cita</span>
+        <div id="loaderReserve" class="loader"></div>
+      </button>
+
+      <hr>
+      <h2>Mis Citas</h2>
+      <div id="user-history"></div>
+    </div>
+
+    <div id="admin-view" class="admin-only">
+      <h1>Panel Administrativo</h1>
+      <div class="form-group">
+        <label>Ver agenda global por fecha:</label>
+        <input type="date" id="adminDateInput" onchange="loadAdminAppointments()">
+      </div>
+      <hr>
+      <h2>Citas del día</h2>
+      <div id="admin-appointments"></div>
+    </div>
+  </div>
+
+  <style>
+    .admin-only, .client-only { display: none; }
+    .visible { display: block !important; }
+    
+    #login-section {
+      background: #fdf6f0;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .appointment-card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 5px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-scheduled { border-left-color: #ffd700; }
+    .status-confirmed { border-left-color: #4caf50; }
+    .status-cancelled { border-left-color: #f44336; }
+  </style>
+
+  <script>
+    let selectedSlot = null;
+    let currentUser = null;
+
+    // --- FUNCIONES DE APOYO ---
+    function toggleLoading(buttonId, loaderId, isLoading) {
+        const btn = document.getElementById(buttonId);
+        const loader = document.getElementById(loaderId);
+        if (btn && loader) {
+            btn.disabled = isLoading;
+            loader.style.display = isLoading ? 'inline-block' : 'none';
+        }
+    }
+
+    // --- AUTENTICACIÓN Y ROLES ---
+    function toggleAuth(isRegister) {
+        document.getElementById('auth-login').style.display = isRegister ? 'none' : 'block';
+        document.getElementById('auth-register').style.display = isRegister ? 'block' : 'none';
+    }
+
+    async function registerUser() {
+        const name = document.getElementById('regName').value;
+        const email = document.getElementById('regEmail').value;
+        if (!name || !email) return alert("Por favor completa todos los campos");
+
+        try {
+            const res = await fetch('http://localhost:3000/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert("✅ Cuenta creada con éxito. Ahora puedes ingresar.");
+                toggleAuth(false);
+                document.getElementById('loginEmail').value = email;
+            } else {
+                alert(data.message);
+            }
+        } catch (error) { alert("Error al conectar con el servidor"); }
+    }
+
+    async function checkRole() {
+        const email = document.getElementById('loginEmail').value;
+        if (!email) return alert("Ingresa un correo");
+
+        try {
+            const res = await fetch('http://localhost:3000/users');
+            const users = await res.json();
+            const user = users.find(u => u.email === email);
+
+            if (!user) return alert("Usuario no registrado");
+
+            currentUser = user;
+            document.getElementById('login-section').style.display = 'none';
+
+            if (user.role === 'admin') {
+                document.getElementById('admin-view').classList.add('visible');
+            } else {
+                document.getElementById('client-view').classList.add('visible');
+                loadServices(); 
+                loadUserHistory();
+            }
+        } catch (e) { alert("Error al conectar con el servidor"); }
+    }
+
+    // --- LÓGICA DE SERVICIOS Y DISPONIBILIDAD ---
+    async function loadServices() {
+        try {
+            const res = await fetch('http://localhost:3000/services');
+            const services = await res.json();
+            const select = document.getElementById('services');
+            if (!select) return;
+            select.innerHTML = '';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = service.name;
+                select.appendChild(option);
+            });
+        } catch (e) { console.error("Error cargando servicios", e); }
+    }
+
+    async function checkAvailability() {
+        const date = document.getElementById('dateInput').value;
+        const serviceId = Number(document.getElementById('services').value);
+        const units = Number(document.getElementById('units').value);
+
+        if (!date) return alert('Selecciona una fecha');
+
+        toggleLoading('btnCheck', 'loaderCheck', true);
+
+        try {
+            const res = await fetch('http://localhost:3000/availability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, services: [{ serviceId, units }] })
+            });
+
+            const data = await res.json();
+            const list = document.getElementById('slots');
+            list.innerHTML = '';
+
+            if (!data || !data.availableSlots || data.availableSlots.length === 0) {
+                list.innerHTML = '<li>No hay horarios disponibles</li>';
+            } else {
+                data.availableSlots.forEach(slot => {
+                    const li = document.createElement('li');
+                    li.textContent = slot.startTime;
+                    li.className = 'slot-item'; 
+                    li.onclick = () => {
+                        selectedSlot = slot;
+                        document.querySelectorAll('.slot-item').forEach(el => el.classList.remove('selected'));
+                        li.classList.add('selected');
+                    };
+                    list.appendChild(li);
+                });
+            }
+        } catch (error) { alert("Error técnico: " + error.message); }
+        finally { toggleLoading('btnCheck', 'loaderCheck', false); }
+    }
+
+    // --- GESTIÓN DE CITAS ---
+    async function createAppointment() {
+        if (!selectedSlot) return alert('Selecciona un horario');
+        const date = document.getElementById('dateInput').value;
+        const serviceId = Number(document.getElementById('services').value);
+        const units = Number(document.getElementById('units').value);
+
+        toggleLoading('btnReserve', 'loaderReserve', true);
+        try {
+            const res = await fetch('http://localhost:3000/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    date,
+                    startTime: selectedSlot.startTime,
+                    services: [{ serviceId, units }],
+                    userId: currentUser.id
+                })
+            });
+            if (res.ok) {
+                alert('✅ Reservada');
+                loadUserHistory();
+                document.getElementById('slots').innerHTML = '';
+                selectedSlot = null;
+            }
+        } catch (e) { alert("Error"); }
+        finally { toggleLoading('btnReserve', 'loaderReserve', false); }
+    }
+
+    async function loadUserHistory() {
+        if (!currentUser) return;
+        try {
+            const res = await fetch(`http://localhost:3000/appointments`);
+            const allAppointments = await res.json();
+            const myApps = allAppointments.filter(a => a.userId === currentUser.id);
+            
+            const list = document.getElementById('user-history');
+            list.innerHTML = myApps.length === 0 ? '<p>No tienes citas agendadas.</p>' : '';
+            
+            myApps.forEach(app => {
+                const div = document.createElement('div');
+                div.className = `appointment-card status-${app.status}`;
+                div.innerHTML = `<div><strong>${app.date}</strong><br>${app.startTime} - ${app.status.toUpperCase()}</div>`;
+                list.appendChild(div);
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadAdminAppointments() {
+        const date = document.getElementById('adminDateInput').value;
+        if (!date) return;
+        try {
+            const res = await fetch(`http://localhost:3000/appointments?date=${date}`);
+            const data = await res.json();
+            const list = document.getElementById('admin-appointments');
+            list.innerHTML = '';
+
+            data.appointments.forEach(app => {
+                const div = document.createElement('div');
+                div.className = `appointment-card status-${app.status}`;
+                div.innerHTML = `
+                    <div><strong>${app.startTime} - ${app.endTime}</strong><br>Usuario: ${app.userId}</div>
+                    <div class="actions">
+                        <button onclick="updateStatus(${app.id}, 'confirm')">Confirmar</button>
+                        <button onclick="updateStatus(${app.id}, 'cancel')">Cancelar</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function updateStatus(id, action) {
+        try {
+            const res = await fetch(`http://localhost:3000/appointments/${id}/${action}`, { method: 'PATCH' });
+            if (res.ok) {
+                loadAdminAppointments();
+            } else {
+                const err = await res.json();
+                alert(err.message);
+            }
+        } catch (e) { alert("Error al actualizar"); }
+    }
+</script>
+</body>
+</html>
