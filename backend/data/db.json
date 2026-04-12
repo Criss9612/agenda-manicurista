@@ -1,0 +1,302 @@
+{
+  "users": [
+    {
+      "id": 1769462709346,
+      "name": "Rosa",
+      "email": "rosatarazona9612@gmail.com",
+      "role": "admin"
+    },
+    {
+      "id": 1769462709347,
+      "name": "Yosis",
+      "email": "yosisgamarra@gmail.com",
+      "role": "client"
+    },
+    {
+      "id": 1771012113919,
+      "name": "Aura",
+      "email": "auragamarra@gmail.com",
+      "role": "client"
+    }
+  ],
+  "services": [
+    {
+      "id": 1769463725979,
+      "name": "Uñas acrílicas",
+      "baseDuration": 120,
+      "extraDurationPerUnit": 0
+    },
+    {
+      "id": 1769464018419,
+      "name": "Diseño adicional",
+      "baseDuration": 0,
+      "extraDurationPerUnit": 30
+    }
+  ],
+  "appointments": [
+    {
+      "id": 1769550044246,
+      "date": "2026-01-27",
+      "startTime": "12:00",
+      "endTime": "12:30",
+      "services": [
+        {
+          "serviceId": 1769464018419,
+          "units": 2
+        }
+      ],
+      "status": "cancelled"
+    },
+    {
+      "id": 1769793174411,
+      "date": "2026-01-27",
+      "startTime": "12:00",
+      "endTime": "13:00",
+      "services": [
+        {
+          "serviceId": 1769464018419,
+          "units": 2
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "id": 1769794672867,
+      "date": "2026-01-27",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "services": [
+        {
+          "serviceId": 1769464018419,
+          "units": 2
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1769794737391,
+      "date": "2026-01-27",
+      "startTime": "16:00",
+      "endTime": "17:00",
+      "services": [
+        {
+          "serviceId": 1769464018419,
+          "units": 2
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1769813727957,
+      "date": "2026-01-31",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 1
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1769813815788,
+      "date": "2026-02-01",
+      "startTime": "11:00",
+      "endTime": "13:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 1
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770333593252,
+      "date": "2026-02-06",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 2
+        }
+      ],
+      "status": "cancelled"
+    },
+    {
+      "id": 1770333631129,
+      "date": "2026-02-06",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 3
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770405489674,
+      "date": "2026-02-13",
+      "startTime": "09:00",
+      "endTime": "09:30",
+      "services": [
+        {
+          "serviceId": 1769464018419,
+          "units": 1
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770659028036,
+      "date": "2026-02-11",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 1
+        }
+      ],
+      "status": "cancelled"
+    },
+    {
+      "id": 1770659069040,
+      "date": "2026-02-11",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 1
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770659629795,
+      "date": "2026-02-09",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 1
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770917944385,
+      "date": "2026-02-13",
+      "startTime": "09:30",
+      "endTime": "11:30",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770918139761,
+      "date": "2026-02-13",
+      "startTime": "11:30",
+      "endTime": "13:30",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770918351324,
+      "date": "2026-02-13",
+      "startTime": "13:30",
+      "endTime": "15:30",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770918520593,
+      "date": "2026-02-13",
+      "startTime": "15:30",
+      "endTime": "17:30",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1770918967335,
+      "date": "2026-02-14",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1771003804931,
+      "date": "2026-02-14",
+      "startTime": "11:00",
+      "endTime": "13:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1771003939689,
+      "date": "2026-02-14",
+      "startTime": "13:00",
+      "endTime": "15:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    },
+    {
+      "id": 1771013723129,
+      "date": "2026-02-14",
+      "startTime": "15:00",
+      "endTime": "17:00",
+      "services": [
+        {
+          "serviceId": 1769463725979,
+          "units": 0
+        }
+      ],
+      "status": "scheduled"
+    }
+  ],
+  "workSchedule": {
+    "startTime": "09:00",
+    "endTime": "18:00"
+  }
+}
