@@ -51,7 +51,6 @@ app.post('/users/register', async (req, res) => {
 
 app.get('/services', async (req, res) => {
   try {
-    // Usamos 'as' para que los nombres coincidan con lo que el frontend espera (camelCase)
     const { rows } = await db.query(`
       SELECT id, name, 
       base_duration as "baseDuration", 
@@ -60,26 +59,26 @@ app.get('/services', async (req, res) => {
     `);
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ message: "Error al cargar servicios" });
+    res.status(500).json({ message: error.message });
   }
 });
 
 // Crear nuevo servicio (Usado por el administrador)
 app.post('/services', async (req, res) => {
-  const { name, baseDuration } = req.body;
+  const { name, baseDuration } = req.body; // El frontend envía 'baseDuration'
   try {
-    // Generamos un ID simple basado en el tiempo
     const id = Math.floor(Date.now() / 1000); 
     
+    // Aquí usamos los nombres con guion bajo (_) que vimos en tu imagen
     await db.query(
       'INSERT INTO services (id, name, base_duration, extra_duration_per_unit) VALUES ($1, $2, $3, $4)',
-      [id, name, baseDuration, 0] // Ponemos 0 en extra por defecto
+      [id, name, baseDuration, 0] 
     );
     
     res.status(201).json({ message: "Servicio creado con éxito" });
   } catch (error) {
-    console.error("Error al crear servicio:", error);
-    res.status(500).json({ message: "Error al guardar el servicio en la base de datos" });
+    console.error("❌ ERROR EN SUPABASE:", error.message);
+    res.status(500).json({ message: error.message });
   }
 });
 
