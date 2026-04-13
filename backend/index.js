@@ -64,6 +64,36 @@ app.get('/services', async (req, res) => {
   }
 });
 
+// Crear nuevo servicio (Usado por el administrador)
+app.post('/services', async (req, res) => {
+  const { name, baseDuration } = req.body;
+  try {
+    // Generamos un ID simple basado en el tiempo
+    const id = Math.floor(Date.now() / 1000); 
+    
+    await db.query(
+      'INSERT INTO services (id, name, base_duration, extra_duration_per_unit) VALUES ($1, $2, $3, $4)',
+      [id, name, baseDuration, 0] // Ponemos 0 en extra por defecto
+    );
+    
+    res.status(201).json({ message: "Servicio creado con éxito" });
+  } catch (error) {
+    console.error("Error al crear servicio:", error);
+    res.status(500).json({ message: "Error al guardar el servicio en la base de datos" });
+  }
+});
+
+// Eliminar servicio
+app.delete('/services/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM services WHERE id = $1', [id]);
+    res.json({ message: "Servicio eliminado" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar el servicio" });
+  }
+});
+
 // --- 3. RUTAS DE DISPONIBILIDAD ---
 
 app.post('/availability', async (req, res) => {
