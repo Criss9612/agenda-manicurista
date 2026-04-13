@@ -80,11 +80,12 @@
       opacity: 0.6;
     }
 
-    .actions {
-  display: flex;
-  gap: 8px; /* Espacio entre botones */
-  justify-content: flex-end;
-  }
+    .actions { 
+  display: flex; 
+  gap: 10px; 
+  justify-content: flex-end; 
+  align-items: center;
+    }
 
   .btn-edit {
     background-color: #bbdefb; /* Azul clarito */
@@ -145,7 +146,6 @@
     .status-cancelled { background-color: var(--cancelled); border-color: #E91E63; }
     .status-completed { background-color: var(--completed); border-color: #9C27B0; }
 
-    .actions { display: flex; gap: 5px; }
     .btn-small { padding: 5px 10px; font-size: 12px; width: auto; margin: 0; }
     .btn-cancel { background-color: #ffcdd2; }
     .btn-confirm { background-color: #c8e6c9; }
@@ -580,27 +580,36 @@
         }
     }
 
-    // Cargar y borrar servicios
+    // Cargar, editar y borrar servicios
     async function loadAdminServices() {
-        try {
-            const res = await fetch('https://agenda-manicurista.onrender.com/services');
-            const services = await res.json();
-            const list = document.getElementById('admin-services-list');
-            list.innerHTML = '';
+    try {
+        const res = await fetch('https://agenda-manicurista.onrender.com/services');
+        const services = await res.json();
+        const list = document.getElementById('admin-services-list');
+        list.innerHTML = '';
 
-            services.forEach(s => {
-                const div = document.createElement('div');
-                div.className = 'history-card';
-                div.style.display = 'flex';
-                div.style.justifyContent = 'space-between';
-                div.innerHTML = `
-                    <span><strong>${s.name}</strong> - ${s.baseDuration} min</span>
-                    <button class="btn-small btn-cancel" style="width:auto;" onclick="deleteService(${s.id})">Eliminar</button>
-                `;
-                list.appendChild(div);
-            });
-        } catch (e) { console.error(e); }
+        services.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'history-card';
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.alignItems = 'center';
+
+            div.innerHTML = `
+                <div>
+                    <strong>${s.name}</strong> - ${s.baseDuration} min
+                </div>
+                <div class="actions">
+                    <button class="btn-small btn-edit" onclick="editService(${s.id}, '${s.name}', ${s.baseDuration})">Editar</button>
+                    <button class="btn-small btn-delete" onclick="deleteService(${s.id})">Eliminar</button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    } catch (e) { 
+        console.error("Error cargando servicios admin:", e); 
     }
+}
 
     async function addService() {
     const name = document.getElementById('newServiceName').value;
