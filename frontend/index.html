@@ -570,25 +570,31 @@
     }
 
     async function addService() {
-        const name = document.getElementById('newServiceName').value;
-        const baseDuration = Number(document.getElementById('newServiceDuration').value);
+    const name = document.getElementById('newServiceName').value;
+    const baseDuration = Number(document.getElementById('newServiceDuration').value);
 
-        if (!name || !baseDuration) return alert("Completa los datos del servicio");
+    if (!name || !baseDuration) return alert("Completa los datos del servicio");
 
-        try {
-            const res = await fetch('https://agenda-manicurista.onrender.com/services', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, baseDuration })
-            });
-            if (res.ok) {
-                alert("Servicio agregado");
-                document.getElementById('newServiceName').value = '';
-                document.getElementById('newServiceDuration').value = '';
-                loadAdminServices(); // Recargar lista
-            }
-        } catch (e) { alert("Error al agregar"); }
+    try {
+        const res = await fetch('https://agenda-manicurista.onrender.com/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // IMPORTANTE: Los nombres aquí deben coincidir con el backend
+            body: JSON.stringify({ name: name, baseDuration: baseDuration })
+        });
+        
+        if (res.ok) {
+            alert("✅ Servicio agregado con éxito");
+            document.getElementById('newServiceName').value = '';
+            document.getElementById('newServiceDuration').value = '';
+            loadAdminServices(); // Esta función debe refrescar la lista
+        } else {
+            alert("Error al agregar el servicio");
+        }
+    } catch (e) { 
+        alert("Error de conexión con el servidor"); 
     }
+}
 
 </script>
 </body>
