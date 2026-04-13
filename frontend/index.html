@@ -188,7 +188,7 @@
 <body>
   <div class="container">
     <div id="login-section">
-  <h1>💅 Bienvenida a Agenda Manicurista</h1>
+  <h1>Bienvenida a Amelia - Agenda tu Cita</h1>
   
   <div id="auth-login">
     <div class="form-group">
@@ -504,6 +504,92 @@
             }
         } catch (e) { alert("Error al actualizar"); }
     }
+
+// --- NUEVAS FUNCIONES PARA EL ADMIN ---
+
+    async function loadAdminAppointments() {
+        const date = document.getElementById('adminDateInput').value;
+        if (!date) return;
+        
+        const list = document.getElementById('admin-appointments');
+        list.innerHTML = '<p style="text-align:center;">Cargando citas...</p>';
+
+        try {
+            const res = await fetch(`https://agenda-manicurista.onrender.com/appointments?date=${date}`);
+            const data = await res.json();
+            
+            // Render envía las citas dentro de data.appointments o como array directo
+            const appointments = data.appointments || data; 
+
+            list.innerHTML = '';
+            if (appointments.length === 0) {
+                list.innerHTML = '<p style="text-align:center;">No hay citas para este día.</p>';
+                return;
+            }
+
+            appointments.forEach(app => {
+                const div = document.createElement('div');
+                div.className = `appointment-card status-${app.status}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${app.startTime} - ${app.endTime || ''}</strong><br>
+                        Cliente ID: ${app.userId} | Estado: ${app.status.toUpperCase()}
+                    </div>
+                    <div class="actions">
+                        <button class="btn-small btn-confirm" onclick="updateStatus(${app.id}, 'confirm')">✓</button>
+                        <button class="btn-small btn-cancel" onclick="updateStatus(${app.id}, 'cancel')">✕</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        } catch (e) { 
+            list.innerHTML = '<p>Error al cargar citas.</p>';
+        }
+    }
+
+    // Cargar y borrar servicios
+    async function loadAdminServices() {
+        try {
+            const res = await fetch('https://agenda-manicurista.onrender.com/services');
+            const services = await res.json();
+            const list = document.getElementById('admin-services-list');
+            list.innerHTML = '';
+
+            services.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'history-card';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.innerHTML = `
+                    <span><strong>${s.name}</strong> - ${s.baseDuration} min</span>
+                    <button class="btn-small btn-cancel" style="width:auto;" onclick="deleteService(${s.id})">Eliminar</button>
+                `;
+                list.appendChild(div);
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function addService() {
+        const name = document.getElementById('newServiceName').value;
+        const baseDuration = Number(document.getElementById('newServiceDuration').value);
+
+        if (!name || !baseDuration) return alert("Completa los datos del servicio");
+
+        try {
+            const res = await fetch('https://agenda-manicurista.onrender.com/services', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, baseDuration })
+            });
+            if (res.ok) {
+                alert("Servicio agregado");
+                document.getElementById('newServiceName').value = '';
+                document.getElementById('newServiceDuration').value = '';
+                loadAdminServices(); // Recargar lista
+            }
+        } catch (e) { alert("Error al agregar"); }
+    }
+
 </script>
 </body>
 </html>
