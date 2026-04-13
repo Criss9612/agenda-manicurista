@@ -82,14 +82,38 @@ app.post('/services', async (req, res) => {
   }
 });
 
-// Eliminar servicio
+// --- RUTA PARA EDITAR UN SERVICIO ---
+app.patch('/services/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, baseDuration } = req.body;
+
+  try {
+    // Usamos los nombres de columna con guion bajo (_) como están en tu Supabase
+    const query = `
+      UPDATE services 
+      SET name = $1, base_duration = $2 
+      WHERE id = $3
+    `;
+    const values = [name, baseDuration, id];
+    
+    await db.query(query, values);
+    
+    res.json({ message: "Servicio actualizado correctamente" });
+  } catch (error) {
+    console.error("❌ Error al editar servicio:", error.message);
+    res.status(500).json({ message: "Error al actualizar: " + error.message });
+  }
+});
+
+// --- RUTA PARA ELIMINAR UN SERVICIO ---
 app.delete('/services/:id', async (req, res) => {
   const { id } = req.params;
   try {
     await db.query('DELETE FROM services WHERE id = $1', [id]);
-    res.json({ message: "Servicio eliminado" });
+    res.json({ message: "Servicio eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar el servicio" });
+    console.error("❌ Error al eliminar servicio:", error.message);
+    res.status(500).json({ message: "Error al eliminar" });
   }
 });
 
