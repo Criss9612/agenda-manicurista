@@ -80,6 +80,26 @@
       opacity: 0.6;
     }
 
+    .actions {
+  display: flex;
+  gap: 8px; /* Espacio entre botones */
+  justify-content: flex-end;
+  }
+
+  .btn-edit {
+    background-color: #bbdefb; /* Azul clarito */
+    color: #0d47a1;
+    width: auto;
+    padding: 5px 15px;
+  }
+
+  .btn-delete {
+    background-color: #ffcdd2; /* Rojo clarito */
+    color: #b71c1c;
+    width: auto;
+    padding: 5px 15px;
+  }
+
     /* 3. LISTADO DE HORARIOS (SLOTS) */
     #slots {
       list-style: none;
@@ -342,28 +362,41 @@
     }
 
     async function checkRole() {
-        const email = document.getElementById('loginEmail').value;
-        if (!email) return alert("Ingresa un correo");
+    const email = document.getElementById('loginEmail').value;
+    if (!email) return alert("Ingresa un correo");
 
-        try {
-            const res = await fetch('https://agenda-manicurista.onrender.com/users');
-            const users = await res.json();
-            const user = users.find(u => u.email === email);
+    try {
+        const res = await fetch('https://agenda-manicurista.onrender.com/users');
+        const users = await res.json();
+        const user = users.find(u => u.email === email);
 
-            if (!user) return alert("Usuario no registrado");
+        if (!user) return alert("Usuario no registrado");
 
-            currentUser = user;
-            document.getElementById('login-section').style.display = 'none';
+        currentUser = user;
+        document.getElementById('login-section').style.display = 'none';
 
-            if (user.role === 'admin') {
-                document.getElementById('admin-view').classList.add('visible');
-            } else {
-                document.getElementById('client-view').classList.add('visible');
-                loadServices(); 
-                loadUserHistory();
-            }
-        } catch (e) { alert("Error al conectar con el servidor"); }
-    }
+        if (user.role === 'admin') {
+            document.getElementById('admin-view').classList.add('visible');
+            
+            // --- NUEVAS ÓRDENES PARA EL ADMIN ---
+            // 1. Cargamos la lista de servicios de inmediato
+            loadAdminServices(); 
+            
+            // 2. Ponemos la fecha de hoy en el calendario del admin
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('adminDateInput');
+            dateInput.value = today;
+            
+            // 3. Cargamos las citas de hoy automáticamente
+            loadAdminAppointments(); 
+            
+        } else {
+            document.getElementById('client-view').classList.add('visible');
+            loadServices(); 
+            loadUserHistory();
+        }
+    } catch (e) { alert("Error al conectar con el servidor"); }
+}
 
     // --- LÓGICA DE SERVICIOS Y DISPONIBILIDAD ---
     async function loadServices() {
@@ -593,6 +626,49 @@
         }
     } catch (e) { 
         alert("Error de conexión con el servidor"); 
+    }
+}
+
+async function editService(id, oldName, oldDuration) {
+    const newName = prompt("Nuevo nombre del servicio:", oldName);
+    const newDuration = prompt("Nueva duración en minutos:", oldDuration);
+
+    if (newName && newDuration) {
+        try {
+            const res = await fetch(`https://agenda-manicurista.onrender.com/services/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: newName, 
+                    baseDuration: Number(newDuration) 
+                })
+            });
+
+            if (res.ok) {
+                alert("✅ Servicio actualizado");
+                loadAdminServices(); // Recarga la lista para ver el cambio
+            } else {
+                alert("Error al actualizar");
+            }
+        } catch (e) {
+            alert("Error de conexión");
+        }
+    }
+}
+
+async function deleteService(id) {
+    if (confirm("¿Estás segura de que quieres eliminar este servicio?")) {
+        try {
+            const res = await fetch(`https://agenda-manicurista.onrender.com/services/${id}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                alert("🗑️ Servicio eliminado");
+                loadAdminServices();
+            }
+        } catch (e) {
+            alert("Error al eliminar");
+        }
     }
 }
 
