@@ -245,13 +245,30 @@
 
     <div id="admin-view" class="admin-only">
       <h1>Panel Administrativo</h1>
+      
       <div class="form-group">
         <label>Ver agenda global por fecha:</label>
         <input type="date" id="adminDateInput" onchange="loadAdminAppointments()">
       </div>
-      <hr>
-      <h2>Citas del día</h2>
       <div id="admin-appointments"></div>
+
+      <hr>
+
+      <h2>Gestión de Servicios</h2>
+      <div id="login-section" style="text-align: left; margin-top: 20px;">
+        <div class="form-group">
+          <label>Nombre del Servicio</label>
+          <input type="text" id="newServiceName" placeholder="Ej: Semipermanente">
+        </div>
+        <div class="form-group">
+          <label>Duración Base (minutos)</label>
+          <input type="number" id="newServiceDuration" placeholder="60">
+        </div>
+        <button onclick="addService()">+ Agregar Servicio</button>
+      </div>
+      
+      <h3>Servicios Actuales</h3>
+      <div id="admin-services-list"></div>
     </div>
   </div>
 
