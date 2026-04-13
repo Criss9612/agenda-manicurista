@@ -308,7 +308,7 @@
         if (!name || !email) return alert("Por favor completa todos los campos");
 
         try {
-            const res = await fetch('http://localhost:3000/users/register', {
+            const res = await fetch('https://agenda-manicurista.onrender.com/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email })
@@ -329,7 +329,7 @@
         if (!email) return alert("Ingresa un correo");
 
         try {
-            const res = await fetch('http://localhost:3000/users');
+            const res = await fetch('https://agenda-manicurista.onrender.com/users');
             const users = await res.json();
             const user = users.find(u => u.email === email);
 
@@ -351,7 +351,7 @@
     // --- LÓGICA DE SERVICIOS Y DISPONIBILIDAD ---
     async function loadServices() {
         try {
-            const res = await fetch('http://localhost:3000/services');
+            const res = await fetch('https://agenda-manicurista.onrender.com/services');
             const services = await res.json();
             const select = document.getElementById('services');
             if (!select) return;
@@ -375,7 +375,7 @@
         toggleLoading('btnCheck', 'loaderCheck', true);
 
         try {
-            const res = await fetch('http://localhost:3000/availability', {
+            const res = await fetch('https://agenda-manicurista.onrender.com/availability', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, services: [{ serviceId, units }] })
@@ -413,7 +413,7 @@
 
         toggleLoading('btnReserve', 'loaderReserve', true);
         try {
-            const res = await fetch('http://localhost:3000/appointments', {
+            const res = await fetch('https://agenda-manicurista.onrender.com/appointments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -436,7 +436,7 @@
     async function loadUserHistory() {
         if (!currentUser) return;
         try {
-            const res = await fetch(`http://localhost:3000/appointments`);
+            const res = await fetch(`https://agenda-manicurista.onrender.com/appointments`);
             const allAppointments = await res.json();
             const myApps = allAppointments.filter(a => a.userId === currentUser.id);
             
@@ -456,7 +456,7 @@
         const date = document.getElementById('adminDateInput').value;
         if (!date) return;
         try {
-            const res = await fetch(`http://localhost:3000/appointments?date=${date}`);
+            const res = await fetch(`https://agenda-manicurista.onrender.com/appointments?date=${date}`);
             const data = await res.json();
             const list = document.getElementById('admin-appointments');
             list.innerHTML = '';
@@ -478,7 +478,7 @@
 
     async function updateStatus(id, action) {
         try {
-            const res = await fetch(`http://localhost:3000/appointments/${id}/${action}`, { method: 'PATCH' });
+            const res = await fetch(`https://agenda-manicurista.onrender.com/appointments/${id}/${action}`, { method: 'PATCH' });
             if (res.ok) {
                 loadAdminAppointments();
             } else {
